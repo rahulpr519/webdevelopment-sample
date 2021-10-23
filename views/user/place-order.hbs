@@ -1,0 +1,129 @@
+<section class="pt-5">
+    <div class="container mt-5">
+        <form action="" id="checkout-form">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <h2>Enter Delivery Details</h2><br>
+                    <div>
+                        <label for="">Address</label>
+                        <input class="form-control" type="text" id="address" name="address">
+
+                        <label for="">Pincode</label>
+                        <input class="form-control" type="text" id="pincode" name="pincode">
+
+                        <label for="">Mobile</label>
+                        <input class="form-control" type="text" id="mobile" name="mobile">
+                        <input type="text" name="userId" value="{{user._id}}" hidden>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="container mt-3 ms-5 checkout">
+                        <h5>Total Amount RS.{{total}}</h5>
+                        <hr>
+                        <div class="payment">
+                            <p>Payment method</p>
+                            <label class="radio-inline" for="">
+                                <input type="radio" name="payment-method" value="COD">COD
+                            </label>
+                            <label class="radio-inline mt-2" for="">
+                                <input type="radio" name="payment-method" value="ONLINE">Online payment
+                            </label>
+                            <button class="btn btn-primary float-end" type="submit">checkout</button>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</section>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    $("#checkout-form").submit((e) => {
+        e.preventDefault()
+        $.ajax({
+            url: '/place-order',
+            method: 'POST',
+            data: $('#checkout-form').serialize(),
+            success: (response) => {
+                alert(response)
+                if (response.codSuccess) {
+                    location.href = '/order-success'
+                } else {
+                    razorpayPayments(response)
+                }
+            }
+        })
+    })
+
+    function razorpayPayments(order) {
+        var options = {
+            "key": "rzp_test_igR4NpaYl1lZKc", // Enter the Key ID generated from the Dashboard
+            "amount": order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Rahul",
+            "description": "Test Transaction",
+            "image": "https://example.com/your_logo",
+            "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "handler": function (response) {
+                alert(response.razorpay_payment_id);
+                alert(response.razorpay_order_id);
+                alert(response.razorpay_signature)
+
+                verifyPayment(response,order)
+            },
+            "prefill": {
+                "name": "Gaurav Kumar",
+                "email": "gaurav.kumar@example.com",
+                "contact": "9999999999"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+                "color": "#3399cc"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+
+    function verifyPayment(payment,order){
+        $.ajax({
+            url:'/verify-payment',
+            data:{
+                payment,
+                order
+            },
+            method:'post',
+            success:(response)=>{
+                if(response.status){
+                    location.href = '/order-success'
+                }else{
+                    alert('Payment failed')
+                }
+            }
+        })
+    }
+</script>
+
+<style>
+    input[type=radio] {
+        width: 15px;
+        height: 15px;
+    }
+
+    label.radio-inline {
+        display: flex;
+        align-items: center;
+    }
+
+    .checkout {
+        border: 1px solid;
+        border-radius: 5px;
+        padding: 45px;
+    }
+</style>
