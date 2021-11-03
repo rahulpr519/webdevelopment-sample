@@ -2,7 +2,6 @@ const { response } = require('express');
 var express = require('express');
 const productHelpers = require('../helpers/product-helpers');
 var router = express.Router();
-const productHelper=require('../helpers/product-helpers');
 const userHelpers=require('../helpers/user-helpers')
 const verifyLogin = (req,res,next)=>{
   if(req.session.user){
