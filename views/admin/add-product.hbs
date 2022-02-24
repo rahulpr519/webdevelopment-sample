@@ -1,3 +1,4 @@
+
 <section>
     <div class="container">
         <div class="col-md-6">
@@ -7,7 +8,18 @@
                 <input type="text" name="Name" class="form-control">
 
                 <label for="">Category</label>
-                <input type="text" name="Category" class="form-control">
+                <div class="row ms-auto me-auto">
+                <select name="Category" id="Category" class="form-control  col-md">
+                    {{#each categories}}
+                    <option class="option-field" value="{{this.category}}">{{this.category}}</option>
+                    {{/each}}
+                </select>
+                <button class="btn-success col-sm" style="cursor: pointer;" value="Wardrobe">Add Category</button>
+
+                </div>
+                <div id="parentDiv">
+
+                </div>
 
                 <label for="">Price</label>
                 <input type="number" name="Price" class="form-control">
@@ -24,3 +36,37 @@
         </div>
     </div>
 </section>
+
+<script>
+
+    const Ctgry = document.querySelector('button[value=Wardrobe]')
+    //const inputField = document.querySelector('input[name=Category]')
+    const firstinputField = document.querySelector('#Category')
+    const parentDiv = document.querySelector('#parentDiv')
+    
+    
+    Ctgry.addEventListener('click',addCategory);
+
+    function addCategory(event) {
+            event.preventDefault();
+            console.log('button clicked')
+            var newField = document.createElement('input');
+            newField.setAttribute('type','text');
+            newField.setAttribute('name','Category');
+            newField.setAttribute('class','form-control');
+            newField.setAttribute('id','form_control');
+            //var input_tag = document.querySelector('input').innerHTML.length
+            parentDiv.appendChild(newField);
+            
+            //inputField.classList.remove("hide-field")
+            firstinputField.value = "";
+
+        /*fetch('http://localhost:3000/admin/add-category',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify(inputField.value)
+        }) */
+    }
+</script>

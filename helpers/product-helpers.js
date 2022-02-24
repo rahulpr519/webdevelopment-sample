@@ -2,6 +2,8 @@ var db = require('../config/connection')
 var collection=require('../config/collections')
 var ObjectId=require('mongodb').ObjectId;
 const { response } = require('express');
+const { promise, reject } = require('bcrypt/promises');
+const async = require('hbs/lib/async');
 
 
 module.exports = {
@@ -51,6 +53,29 @@ module.exports = {
                 }
             }).then((response)=>{
                 resolve()
+            })
+        })
+    },
+
+    getCategories:()=>{
+        return new Promise(async(resolve,reject)=>{
+            let category =await db.get().collection(collection.CATEGORY_COLLECTION).find().toArray()
+            if(category){
+                console.log(category);
+                resolve(category)
+            }else{
+                reject('null collection')
+            }
+        })
+    },
+    addNewCategory:(category)=>{
+        return new Promise((resolve,reject)=>{
+            db.get().collection(collection.CATEGORY_COLLECTION).insertOne({category:category}).then((response)=>{
+                if(response){
+                    resolve(true)
+                }else{
+                    reject('category not added')
+                }
             })
         })
     }
